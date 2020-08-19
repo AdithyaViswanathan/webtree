@@ -3,7 +3,7 @@
 
 import networkx as nx
 import matplotlib.pyplot as plt
-from bs4 import BeautifulSoup # To get everything
+from bs4 import BeautifulSoup, NavigableString # To get everything
 import chart_studio.plotly as py
 from plotly.graph_objs import *
 
@@ -33,6 +33,11 @@ for parent in parents:
 	"""
 	if hasattr(parent, 'contents'):
 		for child in parent.contents:
+			"""
+			These 2 lines will take out the extra string present as a node
+			# if isinstance(child, NavigableString):
+			# 	continue
+			"""
 			"""
 			Four iterations of the loop with print(child)
 			<head></head>
@@ -128,7 +133,7 @@ Example print(pos) #They vary each time
 
 """
 
-"""
+
 # This part of code eliminates the extra nodes that are present in the graph
 # I didnt know if you want those extra nodes or not..
 
@@ -141,15 +146,15 @@ for k in pos.keys():
 		Xv.append(pos[k][0])
 		Yv.append(pos[k][1])
 	counter+=1
-"""
+
 
 
 """
 ['html', 'head', 'body', 'div', 'p'] This was the initial label
 """
-Xv=[pos[k][0] for k in pos.keys()] # X-coords from the above pos
-Yv=[pos[k][1] for k in pos.keys()] # Y-coords from the above pos
-labels = labels + labels 
+# Xv=[pos[k][0] for k in pos.keys()] # X-coords from the above pos
+# Yv=[pos[k][1] for k in pos.keys()] # Y-coords from the above pos
+# labels = labels + labels 
 
 """
 After I did this ... the labels turned out to be
@@ -163,6 +168,9 @@ Yed=[]
 for edge in edges:
 	Xed+=[pos[edge[0]][0],pos[edge[1]][0],None]
 	Yed+=[pos[edge[0]][1],pos[edge[1]][1],None]
+
+
+
 
 trace3=Scatter(x=Xed,
                y=Yed,
@@ -182,6 +190,46 @@ trace4=Scatter(x=Xv,
                text=labels,
                hoverinfo='text'
                )
+
+
+# Couldn't find any different code in google : ( Sed Lyf... 
+# So modified our own code to color some nodes differently 
+# This code colors the nodes given in the shortest_lenth list
+# Given that our shortest length calculator, calculates the length from the child_nodes ... so that the return name is p5, p3 similar to that 
+
+shortest_length = (nx.shortest_path(G,source="html",target="p5"))
+# shortest_length = ['html','div','body','p5']
+
+
+diff_color_x = []
+diff_color_y = []
+diff_color_label = []
+Nodes = list(G.nodes)
+
+for ttc in shortest_length:
+  ttcl = len(ttc)
+  for i in range(len(labels)):
+    if(ttc == str(Nodes[i][:ttcl])):
+      diff_color_y.append(Yv[i])
+      diff_color_x.append(Xv[i])
+      diff_color_label.append(labels[i])
+
+trace5=Scatter(x=diff_color_x,
+               y=diff_color_y,
+               mode='markers',
+               name='net',
+               marker=dict(symbol='circle-dot',
+                             size=5,
+                             color='#FFA500',
+                             line=dict(color='rgb(50,50,50)', width=0.5)
+                             ),
+               text=diff_color_label,
+               hoverinfo='text'
+               )
+
+
+
+
 
 # annot="This networkx.Graph has the Fruchterman-Reingold layout<br>Code:"+\
 # "<a href='http://nbviewer.ipython.org/gist/empet/07ea33b2e4e0b84193bd'> [2]</a>"
@@ -227,7 +275,7 @@ layout=Layout(title= "Just Checking",
         ]
     )
 
-
-data1=[trace3, trace4]
+# data1=[trace3, trace4]
+data1=[trace3, trace4, trace5]
 fig1=Figure(data=data1, layout=layout)
 fig1.write_html('first_figure.html', auto_open=True)
