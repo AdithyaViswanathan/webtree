@@ -104,6 +104,7 @@ def get_figure(find_node):
         G.add_node(node_name)
         G.add_edge(parent.name,node_name)
         x = (parent.name,node_name)
+        #print(parent.name,node_name)
         """
         Contents of X 4 Iterations
         ('html', 'head')
@@ -112,7 +113,7 @@ def get_figure(find_node):
         ('body', 'p')
         """
         if child.name != None:
-          element1 = str(child.name)
+          element1 = str(child.name) + ': ' + node_name
           child.name = node_name
         else:
           element1 = 'string'
@@ -139,8 +140,35 @@ def get_figure(find_node):
   [('html', 'head'), ('html', 'body'), ('body', 'div'), ('body', 'p')]
   -
   """
-
   pos = nx.spiral_layout(G)
+  def painter(node_color_list,the_color):
+    diff_color_x = []
+    diff_color_y = []
+    diff_color_label = []
+    Nodes = list(G.nodes)
+
+    for ttc in node_color_list:
+      ttcl = len(ttc)
+      for i in range(len(labels)):
+        if(ttc == str(Nodes[i][:ttcl])):
+          diff_color_y.append(Yv[i])
+          diff_color_x.append(Xv[i])
+          diff_color_label.append(labels[i])
+
+    trace=Scatter(x=diff_color_x,
+                   y=diff_color_y,
+                   mode='markers',
+                   name='net',
+                   marker=dict(symbol='circle-dot',
+                                 size=5,
+                                 color=the_color,
+                                 line=dict(color='rgb(50,50,50)', width=0.5)
+                                 ),
+                   text=diff_color_label,
+                   hoverinfo='text'
+                   )
+
+    return trace
 
 
   """
@@ -248,35 +276,38 @@ def get_figure(find_node):
   # This code colors the nodes given in the shortest_lenth list
   # Given that our shortest length calculator, calculates the length from the child_nodes ... so that the return name is p5, p3 similar to that 
   print(find_node)
-  shortest_length = (nx.shortest_path(G,source="html",target=find_node))
-  # shortest_length = ['html','div','body','p5']
+  shortest_path = (nx.shortest_path(G,source="html",target=find_node))
+  shortest_length = ['html','head0']
+  trace5 = painter(shortest_path,'#FFA500')
+  trace6 = painter(shortest_length,'#00FF00')
 
 
-  diff_color_x = []
-  diff_color_y = []
-  diff_color_label = []
-  Nodes = list(G.nodes)
 
-  for ttc in shortest_length:
-    ttcl = len(ttc)
-    for i in range(len(labels)):
-      if(ttc == str(Nodes[i][:ttcl])):
-        diff_color_y.append(Yv[i])
-        diff_color_x.append(Xv[i])
-        diff_color_label.append(labels[i])
+  # diff_color_x = []
+  # diff_color_y = []
+  # diff_color_label = []
+  # Nodes = list(G.nodes)
 
-  trace5=Scatter(x=diff_color_x,
-                 y=diff_color_y,
-                 mode='markers',
-                 name='net',
-                 marker=dict(symbol='circle-dot',
-                               size=5,
-                               color='#FFA500',
-                               line=dict(color='rgb(50,50,50)', width=0.5)
-                               ),
-                 text=diff_color_label,
-                 hoverinfo='text'
-                 )
+  # for ttc in shortest_length:
+  #   ttcl = len(ttc)
+  #   for i in range(len(labels)):
+  #     if(ttc == str(Nodes[i][:ttcl])):
+  #       diff_color_y.append(Yv[i])
+  #       diff_color_x.append(Xv[i])
+  #       diff_color_label.append(labels[i])
+
+  # trace5=Scatter(x=diff_color_x,
+  #                y=diff_color_y,
+  #                mode='markers',
+  #                name='net',
+  #                marker=dict(symbol='circle-dot',
+  #                              size=5,
+  #                              color='#FFA500',
+  #                              line=dict(color='rgb(50,50,50)', width=0.5)
+  #                              ),
+  #                text=diff_color_label,
+  #                hoverinfo='text'
+  #                )
 
 
 
@@ -327,7 +358,7 @@ def get_figure(find_node):
   #     )
 
   # data1=[trace3, trace4]
-  data1=[trace3, trace4, trace5]
+  data1=[trace3, trace4, trace5, trace6]
   fig1=Figure(data=data1, layout=layout)#
   return fig1
 
@@ -337,6 +368,14 @@ def get_figure(find_node):
 available_indicators = ["html","p5"]
 app2.layout = html.Div([
     html.H1(children='Hello Dash'),
+
+    html.Div([
+        dcc.Input(
+            id="text_input".format("text"),
+            type="text",
+            placeholder="search text",
+        )
+    ]),
 
     html.Div([
             dcc.Dropdown(
@@ -357,11 +396,12 @@ app2.layout = html.Div([
 
 @app2.callback(
     Output('graph1', 'figure'),
-    [Input('node', 'value')]
+    [Input('node', 'value'),
+    Input('text_input','value')]
 )
-def callback(arg):
-    print(arg)
-    return get_figure(arg)
+def callback(arg1,arg2):
+    print(arg2)
+    return get_figure(arg1)
 
 if __name__ == '__main__':
     app2.run_server(debug=True)
