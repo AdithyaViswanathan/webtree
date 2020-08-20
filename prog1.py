@@ -7,6 +7,36 @@ from bs4 import BeautifulSoup, NavigableString # To get everything
 import chart_studio.plotly as py
 from plotly.graph_objs import *
 
+#Paints the nodes according to the list sent with the color 'HEX VALUE'
+def painter(node_color_list,the_color):
+	diff_color_x = []
+	diff_color_y = []
+	diff_color_label = []
+	Nodes = list(G.nodes)
+
+	for ttc in node_color_list:
+	  ttcl = len(ttc)
+	  for i in range(len(labels)):
+	    if(ttc == str(Nodes[i][:ttcl])):
+	      diff_color_y.append(Yv[i])
+	      diff_color_x.append(Xv[i])
+	      diff_color_label.append(labels[i])
+
+	trace=Scatter(x=diff_color_x,
+	               y=diff_color_y,
+	               mode='markers',
+	               name='net',
+	               marker=dict(symbol='circle-dot',
+	                             size=5,
+	                             color=the_color,
+	                             line=dict(color='rgb(50,50,50)', width=0.5)
+	                             ),
+	               text=diff_color_label,
+	               hoverinfo='text'
+	               )
+
+	return trace
+
 output = "<html><head></head><body class='jc' id='id1'><div class='jc jc1 jc2'>String in Div tag with nested p tag<p> Hello </p></div><p>Hi There!</p></body></html>" #Output to be processed
 soup = BeautifulSoup(output, 'lxml')
 result = soup.findAll("html") #The result will point to the top node <html>
@@ -197,38 +227,14 @@ trace4=Scatter(x=Xv,
 # This code colors the nodes given in the shortest_lenth list
 # Given that our shortest length calculator, calculates the length from the child_nodes ... so that the return name is p5, p3 similar to that 
 
-shortest_length = (nx.shortest_path(G,source="html",target="p5"))
-# shortest_length = ['html','div','body','p5']
-
-
-diff_color_x = []
-diff_color_y = []
-diff_color_label = []
-Nodes = list(G.nodes)
-
-for ttc in shortest_length:
-  ttcl = len(ttc)
-  for i in range(len(labels)):
-    if(ttc == str(Nodes[i][:ttcl])):
-      diff_color_y.append(Yv[i])
-      diff_color_x.append(Xv[i])
-      diff_color_label.append(labels[i])
-
-trace5=Scatter(x=diff_color_x,
-               y=diff_color_y,
-               mode='markers',
-               name='net',
-               marker=dict(symbol='circle-dot',
-                             size=5,
-                             color='#FFA500',
-                             line=dict(color='rgb(50,50,50)', width=0.5)
-                             ),
-               text=diff_color_label,
-               hoverinfo='text'
-               )
+shortest_path = (nx.shortest_path(G,source="html",target="p5"))
+shortest_length = ['html','div','body','string']
 
 
 
+
+trace5 = painter(shortest_path,'#FFA500')
+trace6 = painter(shortest_length,'#FF0000')
 
 
 # annot="This networkx.Graph has the Fruchterman-Reingold layout<br>Code:"+\
@@ -276,6 +282,6 @@ layout=Layout(title= "Just Checking",
     )
 
 # data1=[trace3, trace4]
-data1=[trace3, trace4, trace5]
+data1=[trace3, trace4, trace5, trace6]
 fig1=Figure(data=data1, layout=layout)
 fig1.write_html('first_figure.html', auto_open=True)
