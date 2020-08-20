@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 from bs4 import BeautifulSoup, NavigableString # To get everything
 import chart_studio.plotly as py
 from plotly.graph_objs import *
-
+import plotly.graph_objects as go
+from plotly.figure_factory import create_quiver
 #Paints the nodes according to the list sent with the color 'HEX VALUE'
 def painter(node_color_list,the_color):
 	diff_color_x = []
@@ -37,7 +38,7 @@ def painter(node_color_list,the_color):
 
 	return trace
 
-output = "<html><head></head><body class='jc' id='id1'><div class='jc jc1 jc2'>String in Div tag with nested p tag<p> Hello </p></div><p>Hi There!</p></body></html>" #Output to be processed
+output = "<html><head><head2></head2></head><body class='jc' id='id1'><div class='jc jc1 jc2'>String in Div tag with nested p tag<p> Hello </p></div><p>Hi There!</p></body></html>" #Output to be processed
 soup = BeautifulSoup(output, 'lxml')
 result = soup.findAll("html") #The result will point to the top node <html>
 """
@@ -201,7 +202,6 @@ for edge in edges:
 
 
 
-
 trace3=Scatter(x=Xed,
                y=Yed,
                mode='lines',
@@ -227,7 +227,7 @@ trace4=Scatter(x=Xv,
 # This code colors the nodes given in the shortest_lenth list
 # Given that our shortest length calculator, calculates the length from the child_nodes ... so that the return name is p5, p3 similar to that 
 
-shortest_path = (nx.shortest_path(G,source="html",target="p5"))
+shortest_path = (nx.shortest_path(G,source="html",target="html"))
 shortest_length = ['html','div','body','string']
 
 
@@ -264,9 +264,44 @@ layout=Layout(title= "Just Checking",
         t=100,
     ),
     hovermode='closest',
-    annotations=[
+    )
+
+
+# data1=[trace3, trace4]
+data1=[trace3, trace4, trace5, trace6]
+fig1=Figure(data=data1, layout=layout)
+
+
+fromX=[]
+fromY=[]
+toX=[]
+toY=[]
+for edge in edges:
+	fromX.append(pos[edge[0]][0])
+	fromY.append(pos[edge[0]][1])
+	toX.append(pos[edge[1]][0])
+	toY.append(pos[edge[1]][1])
+
+list_len = len(fromX)
+list_of_arrows = []
+for i in range(list_len):
+	list_of_arrows+=([dict( 	x=toX[i],  # arrows' head
+  								y=toY[i],  # arrows' head
+  								ax=fromX[i],  # arrows' tail
+  								ay=fromY[i],  # arrows' tail
+  								xref='x',
+  								yref='y',
+  								axref='x',
+  								ayref='y',
+  								text='',  # if you want only the arrow
+  								showarrow=True,
+  								arrowhead=2,
+  								arrowsize=2,
+  								arrowwidth=1,
+  								arrowcolor='black')])
+annotations=[
            dict(
-           showarrow=False,
+            showarrow=False,
             text='This igraph.Graph has the Kamada-Kawai layout',
             xref='paper',
             yref='paper',
@@ -279,9 +314,7 @@ layout=Layout(title= "Just Checking",
             )
             )
         ]
-    )
-
-# data1=[trace3, trace4]
-data1=[trace3, trace4, trace5, trace6]
-fig1=Figure(data=data1, layout=layout)
+fig1.update_layout(
+	annotations = annotations + list_of_arrows,
+)
 fig1.write_html('first_figure.html', auto_open=True)

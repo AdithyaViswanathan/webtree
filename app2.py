@@ -41,21 +41,6 @@ layout=Layout(title= "Just Checking",
         t=100,
     ),
     hovermode='closest',
-    annotations=[
-           dict(
-           showarrow=False,
-            text='This igraph.Graph has the Kamada-Kawai layout',
-            xref='paper',
-            yref='paper',
-            x=0,
-            y=-0.1,
-            xanchor='left',
-            yanchor='bottom',
-            font=dict(
-            size=14
-            )
-            )
-        ]
     )
 def get_figure(find_node):
   output = "<html><head></head><body class='jc' id='id1'><div class='jc jc1 jc2'>String in Div tag with nested p tag<p> Hello </p></div><p>Hi There!</p></body></html>" #Output to be processed
@@ -359,7 +344,57 @@ def get_figure(find_node):
 
   # data1=[trace3, trace4]
   data1=[trace3, trace4, trace5, trace6]
-  fig1=Figure(data=data1, layout=layout)#
+  fig1=Figure(data=data1, layout=layout)
+
+  """
+  The bottom pieceo of code adds the arrows from the start to End 
+
+  """
+  fromX=[]
+  fromY=[]
+  toX=[]
+  toY=[]
+  for edge in edges:
+    fromX.append(pos[edge[0]][0])
+    fromY.append(pos[edge[0]][1])
+    toX.append(pos[edge[1]][0])
+    toY.append(pos[edge[1]][1])
+
+  list_len = len(fromX)
+  list_of_arrows = []
+  for i in range(list_len):
+    list_of_arrows+=([dict(   x=toX[i],  # arrows' head
+                    y=toY[i],  # arrows' head
+                    ax=fromX[i],  # arrows' tail
+                    ay=fromY[i],  # arrows' tail
+                    xref='x',
+                    yref='y',
+                    axref='x',
+                    ayref='y',
+                    text='',  # if you want only the arrow
+                    showarrow=True,
+                    arrowhead=2,
+                    arrowsize=2,
+                    arrowwidth=1,
+                    arrowcolor='black')])
+  annotations=[
+             dict(
+              showarrow=False,
+              text='This igraph.Graph has the Kamada-Kawai layout',
+              xref='paper',
+              yref='paper',
+              x=0,
+              y=-0.1,
+              xanchor='left',
+              yanchor='bottom',
+              font=dict(
+              size=14
+              )
+              )
+          ]
+  fig1.update_layout(
+    annotations = annotations + list_of_arrows,
+  )
   return fig1
 
 
