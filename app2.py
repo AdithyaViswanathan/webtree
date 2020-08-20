@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup, NavigableString # To get everything
 import chart_studio.plotly as py
 from plotly.graph_objs import *
 import pandas as pd
+import re
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -42,7 +43,7 @@ layout=Layout(title= "Just Checking",
     ),
     hovermode='closest',
     )
-def get_figure(find_node):
+def get_figure(find_node,text):
   output = "<html><head></head><body class='jc' id='id1'><div class='jc jc1 jc2'>String in Div tag with nested p tag<p> Hello </p></div><p>Hi There!</p></body></html>" #Output to be processed
   soup = BeautifulSoup(output, 'lxml')
   result = soup.findAll("html") #The result will point to the top node <html>
@@ -145,7 +146,7 @@ def get_figure(find_node):
                    mode='markers',
                    name='net',
                    marker=dict(symbol='circle-dot',
-                                 size=5,
+                                 size=10,
                                  color=the_color,
                                  line=dict(color='rgb(50,50,50)', width=0.5)
                                  ),
@@ -262,9 +263,45 @@ def get_figure(find_node):
   # Given that our shortest length calculator, calculates the length from the child_nodes ... so that the return name is p5, p3 similar to that 
   print(find_node)
   shortest_path = (nx.shortest_path(G,source="html",target=find_node))
-  shortest_length = ['html','head0']
+  shortest_length = ['html']
+  
+  # Checking Tag Attributes
+  if text!= None:
+    for i in range(len(labels)):
+      x = re.search(text,labels[i])
+      if x:
+        shortest_length.append(parents[i].name)
+
+  # Checking if not found searching raw html code
+  res = [] 
+  for val in shortest_length: 
+      if val != None : 
+          res.append(val)
+      else:
+        for item in parents:
+          item = str(item)
+          x = re.search(text,item)
+          if x:
+            res.append(item)
+  
+  # Matching Raw HTML code to parent for target node
+  res2 = []
+  for item1 in res:
+    for item2 in parents:
+      if str(item1)==str(item2):
+        res2.append(item2.name)
+
+  res2_2 = []
+  for val in res2:
+    if val != None:
+      res2_2.append(val)
+
+  res = res + res2_2
+
+
+  print(res)
   trace5 = painter(shortest_path,'#FFA500')
-  trace6 = painter(shortest_length,'#00FF00')
+  trace6 = painter(res,'#00FF00')
 
 
 
@@ -435,8 +472,7 @@ app2.layout = html.Div([
     Input('text_input','value')]
 )
 def callback(arg1,arg2):
-    print(arg2)
-    return get_figure(arg1)
+    return get_figure(arg1,arg2)
 
 if __name__ == '__main__':
     app2.run_server(debug=True)
