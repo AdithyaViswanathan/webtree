@@ -10,8 +10,10 @@ import chart_studio.plotly as py
 from plotly.graph_objs import *
 import pandas as pd
 import re
+import requests
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+
 
 app2 = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
@@ -44,7 +46,9 @@ layout=Layout(title= "Just Checking",
     hovermode='closest',
     )
 def get_figure(find_node,text):
-  output = "<html><head></head><body class='jc' id='id1'><div class='jc jc1 jc2'>String in Div tag with nested p tag<p> Hello </p></div><p>Hi There!</p></body></html>" #Output to be processed
+  # output = "<html><head></head><body class='jc' id='id1'><div class='jc jc1 jc2'>String in Div tag with nested p tag<p> Hello </p></div><p>Hi There!</p></body></html>" #Output to be processed
+  r = requests.get("https://abishekshyamsunder.github.io/portfolio/")
+  output = r.text
   soup = BeautifulSoup(output, 'lxml')
   result = soup.findAll("html") #The result will point to the top node <html>
   """
@@ -271,18 +275,21 @@ def get_figure(find_node,text):
       x = re.search(text,labels[i])
       if x:
         shortest_length.append(parents[i].name)
-
   # Checking if not found searching raw html code
   res = [] 
   for val in shortest_length: 
       if val != None : 
           res.append(val)
       else:
-        for item in parents:
-          item = str(item)
-          x = re.search(text,item)
-          if x:
-            res.append(item)
+      	counter = 0
+      	for item in reversed(parents):
+        	item = str(item)
+        	x = re.search(text,item)
+        	if x:
+        		res.append(item)
+        		counter += 1
+        		if(counter==2):
+        			break
   
   # Matching Raw HTML code to parent for target node
   res2 = []
@@ -290,6 +297,7 @@ def get_figure(find_node,text):
     for item2 in parents:
       if str(item1)==str(item2):
         res2.append(item2.name)
+        break
 
   res2_2 = []
   for val in res2:
