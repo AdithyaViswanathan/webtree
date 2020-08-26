@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import networkx as nx
 import matplotlib.pyplot as plt
-from bs4 import BeautifulSoup, NavigableString # To get everything
+from bs4 import BeautifulSoup, NavigableString, Comment # To get everything
 import chart_studio.plotly as py
 from plotly.graph_objs import *
 import pandas as pd
@@ -46,17 +46,40 @@ layout=Layout(title= "Just Checking",
     hovermode='closest',
     )
 def get_figure(find_node,text):
-  # output = "<html><head></head><body class='jc' id='id1'><div class='jc jc1 jc2'>String in Div tag with nested p tag<p> Hello </p></div><p>Hi There!</p></body></html>" #Output to be processed
-  r = requests.get("https://abishekshyamsunder.github.io/portfolio/")
-  output = r.text
+  # output = '''
+  # <html>
+  # 	<head>Some head
+  # 	</head>
+  # 	<body class='jc' id='id1'>
+  # 		<div class='jc jc1 jc2'>
+  # 			String in Div tag with nested p tag
+  # 			<p> Hello </p>
+  # 		</div>
+  # 		<div>
+  # 			Verumdigrtah
+  # 		</div>
+  # 		<p>Hi There!</p>
+  # 	</body>
+  # </html>
+  # '''
+  output = "<html><head><script></script><title>Some</title></head><body class='jc' id='id1'><div class='jc jc1 jc2'>String in Div tag with nested p tag<div>Div kulla Div</div><p> Hello </p></div><div>summa</div><p>Hi There!</p></body></html>" #Output to be processed
+  
+  # r = requests.get("https://abishekshyamsunder.github.io/portfolio/")
+  # output = r.text
+  
   soup = BeautifulSoup(output, 'lxml')
+
+  #The below two lines of code will extract the comments out of the code
+  for element in soup(text=lambda text: isinstance(text, Comment)):
+    element.extract()
   result = soup.findAll("html") #The result will point to the top node <html>
+  
+
   """
   The findAll method traverses the tree, starting at the given point, and 
   finds all the Tag and NavigableString objects that match the criteria you give. 
 
   """
-
 
   G = nx.DiGraph() #Empty Graph with no nodes and no edges.
 
@@ -74,17 +97,42 @@ def get_figure(find_node,text):
     """
     if hasattr(parent, 'contents'):
       for child in parent.contents:
-        """
-        These 2 lines will take out the extra string present as a node
-        # if isinstance(child, NavigableString):
-        #   continue
-        """
+        #These 2 lines will take out the extra string present as a node
+        if isinstance(child, NavigableString):
+          continue
         """
         Four iterations of the loop with print(child)
         <head></head>
         <body><div></div><p></p></body>
         <div></div>
         <p></p>
+        """
+
+        # output = '''
+        # <html>
+        #   <head>Some head
+        #   </head>
+        #   <body class='jc' id='id1'>
+        #     <div class='jc jc1 jc2'>
+        #       String in Div tag with nested p tag
+        #       <p> Hello </p>
+        #     </div>
+        #     <div>
+        #       Verumdigrtah
+        #     </div>
+        #     <p>Hi There!</p>
+        #   </body>
+        # </html>
+        # '''
+        # print(child.name)
+        """
+        head
+        body
+        title
+        div
+        div
+        p
+        p    
         """
         if child.name != None:
           node_name = child.name+str(i)
@@ -102,21 +150,48 @@ def get_figure(find_node,text):
         ('body', 'div')
         ('body', 'p')
         """
+
+        # print(child.contents)
+        """
+        HEAD -->  [<title>Some</title>]
+        BODY -->  [<div class="jc jc1 jc2">String in Div tag with nested p tag<p> Hello </p></div>, <div>summa</div>, <p>Hi There!</p>]
+        TITLE --> ['Some']
+        DIV  ---> ['String in Div tag with nested p tag', <p> Hello </p>]
+        DIV ----> ['summa']
+        P ----->  ['Hi There!']
+        P----->   [' Hello ']
+        """
+        print("")
+        print(str(child.name) + " ---> " + str(child.contents))
+        if child.name == "head":
+          input()
+        toadd = ""
+        for abc in child.contents:
+          print(str(type(abc)) +" -----> " + str(abc.string))
+          if isinstance(abc, NavigableString):
+            print("TOADD ----> " +  str(abc.string))
+            toadd = toadd + str(abc.string)
+       
         if child.name != None:
           element1 = str(child.name) + ': ' + node_name
           child.name = node_name
         else:
-          element1 = 'string'
+          element1 = toadd
         if hasattr(child, 'attrs'):
           for item in child.attrs:
-            #print(item,child.attrs[item])
+            # print(item,child.attrs[item])
+            # input()
             element1 = element1 + '<br>' + '&nbsp; &nbsp;' + item+':' + '&nbsp;' + str(child.attrs[item])
+        
         if child.string != None:
+          print(type(child))
+          print(child.string + " ######################## " + str(child.contents) + "\nINGA\n\n")
           element1 = element1 + '<br>' + '&nbsp; &nbsp;' + 'string'+':' + '&nbsp;' + str(child.string)
+        elif toadd != "":
+          element1 = element1 + '<br>' + '&nbsp; &nbsp;' + 'string'+':' + '&nbsp;' + toadd
         labels.append(element1)
         edges.append(x)
         parents.append(child)
-
         #print(parent.name,node_name)
 
   """
