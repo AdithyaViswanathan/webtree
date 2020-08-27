@@ -397,7 +397,7 @@ def get_figure(find_node,text):
   annotations=[
              dict(
               showarrow=False,
-              text='This igraph.Graph has the Kamada-Kawai layout',
+              text='To change layout of graph, refresh page',
               xref='paper',
               yref='paper',
               x=0,

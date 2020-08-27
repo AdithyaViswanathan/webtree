@@ -1,0 +1,11 @@
+dash>=1.14.0
+dash-core-components>=1.10.2
+dash-html-components>=1.0.3
+plotly>=4.9.0
+networkx>=2.4
+matplotlib>=3.2.1
+pandas>=1.0.3
+beautifulsoup4>=4.9.1
+chart-studio>=1.1.0
+requests>=2.22.0
+Click>=7.0
