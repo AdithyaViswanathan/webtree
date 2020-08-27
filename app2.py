@@ -48,7 +48,7 @@ layout=Layout(title= "Just Checking",
 
 
 r = requests.get("https://abishekshyamsunder.github.io/portfolio/")
-r = requests.get("https://www.autocarindia.com")
+#r = requests.get("https://www.autocarindia.com")
 output = r.text
 
 soup = BeautifulSoup(output, 'lxml')
@@ -517,8 +517,11 @@ def get_figure(find_node,text):
   fig1.update_layout(
     annotations = annotations + list_of_arrows,
   )
-  jc_out = 'out\ncheck'
-  return [fig1,jc_out]
+  #jc_out = 'out\ncheck'
+  n = ""
+  for item in res:
+    n = n + str(item) + '\n'
+  return [fig1,n]
 
 
 #fig1 = get_figure("html")
@@ -536,6 +539,7 @@ app2.layout = html.Div([
     ]),
 
     html.Div([
+      html.Div(id='textarea', style={'whiteSpace': 'pre-line'}),
             dcc.Dropdown(
                 id='node',
                 options=[{'label': i, 'value': i} for i in available_indicators],
@@ -551,7 +555,7 @@ app2.layout = html.Div([
         id='graph1',
     ),
 
-    html.Div(id='textarea', style={'whiteSpace': 'pre-line'})
+    
 
     # dcc.Textarea(
     #     id='textarea',
