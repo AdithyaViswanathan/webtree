@@ -540,11 +540,11 @@ app2.layout = html.Div([
 
     html.Div([
       html.Div(id='textarea', style={'whiteSpace': 'pre-line'}),
-            dcc.Dropdown(
-                id='node',
-                options=[{'label': i, 'value': i} for i in available_indicators],
-                value="html"
-            )],
+            dcc.Input(
+            id="node".format("text"),
+            type="text",
+            placeholder="",
+        )],
         style={'width': '49%', 'display': 'inline-block'}), 
 
     html.Div(children='''
