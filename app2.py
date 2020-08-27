@@ -145,13 +145,13 @@ for parent in parents:
       P ----->  ['Hi There!']
       P----->   [' Hello ']
       """
-      print("")
-      print(str(child.name) + " ---> " + str(child.contents))
+      #print("")
+      #print(str(child.name) + " ---> " + str(child.contents))
       toadd = ""
       for abc in child.contents:
-        print(str(type(abc)) +" -----> " + str(abc.string))
+        #print(str(type(abc)) +" -----> " + str(abc.string))
         if isinstance(abc, NavigableString):
-          print("TOADD ----> " +  str(abc.string))
+          #print("TOADD ----> " +  str(abc.string))
           toadd = toadd + str(abc.string)
      
       if child.name != None:
@@ -166,8 +166,8 @@ for parent in parents:
           element1 = element1 + '<br>' + '&nbsp; &nbsp;' + item+':' + '&nbsp;' + str(child.attrs[item])
       
       if child.string != None:
-        print(type(child))
-        print(child.string + " ######################## " + str(child.contents) + "\nINGA\n\n")
+        #print(type(child))
+        #print(child.string + " ######################## " + str(child.contents) + "\nINGA\n\n")
         element1 = element1 + '<br>' + '&nbsp; &nbsp;' + 'string'+':' + '&nbsp;' + str(child.string)
       elif toadd != "":
         element1 = element1 + '<br>' + '&nbsp; &nbsp;' + 'string'+':' + '&nbsp;' + toadd
@@ -517,7 +517,8 @@ def get_figure(find_node,text):
   fig1.update_layout(
     annotations = annotations + list_of_arrows,
   )
-  return fig1
+  jc_out = 'out\ncheck'
+  return [fig1,jc_out]
 
 
 #fig1 = get_figure("html")
@@ -548,11 +549,21 @@ app2.layout = html.Div([
 
     dcc.Graph(
         id='graph1',
-    )
+    ),
+
+    html.Div(id='textarea', style={'whiteSpace': 'pre-line'})
+
+    # dcc.Textarea(
+    #     id='textarea',
+    #     value='Textarea content initialized\nwith multiple lines of text',
+    #     style={'width': '100%', 'height': 300},
+    # ),
+
 ])
 
 @app2.callback(
-    Output('graph1', 'figure'),
+    [Output('graph1', 'figure'),
+    Output('textarea','children')],
     [Input('node', 'value'),
     Input('text_input','value')]
 )
