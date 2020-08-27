@@ -9,4 +9,4 @@ Features of the project are:
 
 ## Usage  
 `pip install webtree`  
-`webtree scrape --site=https://abishekshyamsunder.github.io/portfolio/`   
+`webtree scrape --site=https://www.google.com`   
