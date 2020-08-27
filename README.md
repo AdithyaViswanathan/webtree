@@ -1,5 +1,5 @@
 # webscraping
-Clone repo
+Clone repo   
 In terminal type:
 - `python3 setup.py bdist_wheel`   
 - `pip3 install dist/*`  
