@@ -533,8 +533,10 @@ app2.layout = html.Div([
     html.Div([
         dcc.Input(
             id="text_input".format("text"),
-            type="text",
+            type="search",
             placeholder="search text",
+            debounce=True,
+
         )
     ]),
 
@@ -544,6 +546,7 @@ app2.layout = html.Div([
             id="node".format("text"),
             type="text",
             placeholder="",
+            debounce=True,  
         )],
         style={'width': '49%', 'display': 'inline-block'}), 
 
