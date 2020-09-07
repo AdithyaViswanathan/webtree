@@ -12,9 +12,10 @@ def read(*parts):
     with codecs.open(os.path.join(here, *parts), 'r') as fp:
         return fp.read()
 
-def read_requires():
-    with open(os.path.join(here, "webtree/requirements.txt"),"r") as reqfile:
-        return reqfile.read().splitlines()
+# def read_requires():
+#     with open(os.path.join(here, "requirements.txt"),"r") as reqfile:
+#         install_requires = list(reqfile.read().splitlines())
+#     return install_requires
 
 #Long Description
 with open("README.md", "r") as fh:
@@ -26,7 +27,7 @@ test_requirements = [ ]
 
 setup(
     name='webtree',
-    version='0.0.1',
+    version='0.0.17',
     description="Displays HTML page as a Graph",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -37,11 +38,11 @@ setup(
     ],
     url='https://github.com/abishekshyamsunder/webtree',
     author="Abishek Shyamsunder, Adithya Viswanathan",
-    author_email='abishekshyamsunder@gmail.com',
+    author_email='abishekshyamsunder@gmail.com, adith_viswa@ymail.com',
     license="MIT license",
     packages=find_packages(),
     package_dir={'webtree': 'webtree'},
-    install_requires=read_requires(),
+    install_requires=['dash>=1.14.0', 'dash-core-components>=1.10.2', 'dash-html-components>=1.0.3', 'plotly>=4.9.0', 'networkx>=2.4', 'matplotlib>=3.2.1', 'pandas>=1.0.3', 'beautifulsoup4>=4.9.1', 'chart-studio>=1.1.0', 'requests>=2.22.0', 'Click>=7.0', 'lxml>=4.5.2', 'scipy>=1.5.2',],
     python_requires='>=3.6.0',
     entry_points={
         'console_scripts': ['webtree=webtree.main:cli'],

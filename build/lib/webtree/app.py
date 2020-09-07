@@ -1,4 +1,4 @@
-base_template = """
+newline = '\n'
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -30,7 +30,7 @@ axis=dict(showline=False, # hide axis line, grid, ticklabels and  title
 
 width=800
 height=800
-layout=Layout(title= " WEB TREE : ",
+layout=Layout(title= "Just Checking",
     font= dict(size=12),
     showlegend=False,
     autosize=False,
@@ -319,8 +319,7 @@ def get_figure(find_node,text):
 
 
 
-  # annot="This networkx.Graph has the Fruchterman-Reingold layout<br>Code:"+\
-  # "<a href='http://nbviewer.ipython.org/gist/empet/07ea33b2e4e0b84193bd'> [2]</a>"
+  # annot="This networkx.Graph has the Fruchterman-Reingold layout<br>Code:"+  # "<a href='http://nbviewer.ipython.org/gist/empet/07ea33b2e4e0b84193bd'> [2]</a>"
 
   # axis=dict(showline=False, # hide axis line, grid, ticklabels and  title
   #           zeroline=False,
@@ -460,4 +459,8 @@ app.layout = html.Div([
 )
 def callback(arg1,arg2):
     return get_figure(arg1,arg2)
-"""
+
+if __name__ == '__main__':
+    init_global_variables('http://www.google.com')
+    app.run_server(debug=True)
+  
